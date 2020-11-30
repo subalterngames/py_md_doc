@@ -144,7 +144,7 @@ class PyMdDoc:
                 else:
                     import_example = f"`from {self.root_import_name}.{file.name[:-3]} import {class_header}`"
                 doc += import_example + "\n\n"
-                doc += PyMdDoc.get_class_description(file_txt, lines, i)
+                doc += PyMdDoc.get_class_description(file_txt)
                 # Parse an enum.
                 if re.search(r"class (.*)\(Enum\):", lines[i]) is not None:
                     doc += "\n\n" + PyMdDoc.get_enum_values(lines, i)
@@ -235,14 +235,12 @@ class PyMdDoc:
         return fields.strip()
 
     @staticmethod
-    def get_class_description(file_txt: str, lines: List[str], start_index: int) -> str:
+    def get_class_description(file_txt: str) -> str:
         """
         Parses a file starting at a line defined by start_index to get the class name and description.
         This assumes that the class has a triple quote description.
 
         :param file_txt: All of the text of the file.
-        :param lines: All of the lines in the file.
-        :param start_index: The start index of the class declaration.
         """
 
         class_desc = re.search(r'class (.*):\n[\s]+"""\n([\s]+((.*)+[\n]+)+?[\s]+)"""', file_txt,

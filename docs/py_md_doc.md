@@ -98,7 +98,7 @@ _Returns:_  A string of field documentation.
 
 #### get_class_description
 
-**`def get_class_description(file_txt: str, lines: List[str], start_index: int) -> str`**
+**`def get_class_description(file_txt: str) -> str`**
 
 _This is a static function._
 
@@ -108,8 +108,6 @@ This assumes that the class has a triple quote description.
 | Parameter | Description |
 | --- | --- |
 | file_txt | All of the text of the file. |
-| lines | All of the lines in the file. |
-| start_index | The start index of the class declaration. |
 
 #### get_function_documentation
 
