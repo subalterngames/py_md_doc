@@ -224,7 +224,7 @@ class PyMdDoc:
             if field_match is not None:
                 # Reduce whitespace.
                 field_desc = field_match.group(1).strip()
-                field_desc = re.sub(r"(\A *\d+\. *|^ {0,12})", r"", field_desc, flags=re.MULTILINE)
+                field_desc = re.sub(r"(\A *\d+\. *|^ {0,8})", r"", field_desc, flags=re.MULTILINE)
                 # Get the field name.
                 field_name = field_match.group(4).split(":")[0].split("=")[0].strip()
 
