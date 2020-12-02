@@ -36,7 +36,7 @@ md.get_docs(output_directory=Path("my_module/docs"))
 - Fields begin with `""":field` and end with `"""` in the constructor. The line immediately after them is the field declaration.
 - Function descriptions begin and end with `"""` immediately after the function definition.
   - Function parameter descriptions are lines within the function description that begin with `:param`
-  - Function return description are lines within the function description that begin with `:return`
+  - Function return description are lines within the function description that begin with `:return:`
 - Function names that begin with `_` are ignored.
 
 ```python

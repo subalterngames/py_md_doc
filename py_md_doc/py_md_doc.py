@@ -316,7 +316,7 @@ class PyMdDoc:
                 elif line == "":
                     func_desc += "\n"
                 # Get the return description
-                elif line.startswith(":return"):
+                elif line.startswith(":return:"):
                     return_description = line[8:]
                 # Get the overview description of the function.
                 else:
