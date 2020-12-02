@@ -1,6 +1,8 @@
 # PyMdDoc
 
-Generate markdown documentation for your Python scripts' code comments that is compatible with GitHub. It's like Sphinx, but simpler (and IMO better-looking).
+Generate markdown documentation for your Python scripts' code comments that is compatible with GitHub. It's like Sphinx, but with simpler requirements and results. It's also not as flexible as Sphinx and is mainly useful for scripts containing only a few classes.
+
+For example output, [see the code documentation for this module](docs/py_md_doc.md).
 
 ## Installation
 
@@ -38,6 +40,7 @@ md.get_docs(output_directory=Path("my_module/docs"))
   - Function parameter descriptions are lines within the function description that begin with `:param`
   - Function return description are lines within the function description that begin with `:return:`
 - Function names that begin with `_` are ignored.
+- The code for PyMdDoc as well as the code examples below use [type hinting](https://docs.python.org/3/library/typing.html). You do _not_ need type hinting in your code for PyMdDoc to work properly.
 
 ```python
 class MyClass:
@@ -51,7 +54,7 @@ class MyClass:
         """
         self.val = 0
 
-    def set_val(self, val: int):
+    def set_val(self, val: int) -> None:
         """
         Set the val of this object.
 
@@ -60,14 +63,14 @@ class MyClass:
 
         self.val = val
 
-    def get_val(self):
+    def get_val(self) -> int:
         """
         :return The value of this object.
         """
         
         return self.val
 
-    def _private_function(self):
+    def _private_function(self) -> None:
         """
         This won't appear in the documentation.
         """
@@ -75,7 +78,7 @@ class MyClass:
         return
 ```
 
-- Enum values are documented by commenting the line next to them.
+- [Enum values](https://docs.python.org/3/library/enum.html) are documented by commenting the line next to them.
 
 ```python
 from enum import Enum
@@ -87,7 +90,7 @@ class MyEnum(Enum):
 
 ## Metadata file
 
-You can add an optional metadata dictionary (see [the constructor](doc/py_md_doc.md#__init__)).
+You can add an optional metadata dictionary (see [the constructor](docs/py_md_doc.md#__init__)).
 
 A metadata file is structured like this:
  
@@ -112,5 +115,62 @@ A metadata file is structured like this:
 ```
 
 - The top-order key of the dictionary (`"PyMdDoc"`) is the name of the class. You don't need to add every class that you wish to document. If the class is not listed in `metadata.json` but is listed in the `files` parameter, its functions will be documented in the order they appear in the script.
-- Each key in the class metadata (`"Constructor"`, `"Documentation Generation"`, `"Helper Functions"`) is a section. Each section has a `"description"` and a list of names of `"functions"`. The functions will appear in the section in the order they appear in this list.
+- Each key in the class metadata (`"Constructor"`, `"Documentation Generation"`, `"Helper Functions"`) is a section.
+  - Each section name will be a header in the document, except for `"Constructor"`.
+  - Each section has a `"description"` and a list of names of `"functions"`. The functions will appear in the section in the order they appear in this list.
 - If the class name is listed in `metadata.json` and a function name can't be found in any of the section lists, the console will output a warning. For example, if you were to add a function named `new_function()` to `PyMdDoc`, you'd have to add it to a section in the metadata file as well because `PyMdDoc` is a key in the metadata dictionary.
+
+## Limitations
+
+- This script is for class objects only and won't document functions that aren't in classes:
+
+```python
+def my_func():
+    """
+    This function will be ignored.
+    """
+    pass 
+
+class MyClass:
+    """
+    This class will be in the documentation.
+    """
+
+    def class_func(self):
+        """
+        This function will be in the documentation.
+        """
+        pass
+
+def another_my_func():
+    """
+    This function will be erroneously included with MyClass.
+    """
+    pass 
+```
+
+- Functions can be grouped and reordered into categories, but classes and fields are always documented from the top of the document to the bottom:
+
+```python
+class MyClass:
+    """
+    This class will documented first.
+    """
+
+    def class_func(self):
+        """
+        This function will be documented first.
+        """
+        pass
+
+    def another_class_func(self):
+        """
+        This function will be documented second.
+        """
+        pass
+
+class AnotherClass:
+    """
+    This class will be documented second.
+    """
+```

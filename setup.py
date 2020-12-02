@@ -4,7 +4,7 @@ from pathlib import Path
 setup(
     name="py_md_doc",
     packages={"py_md_doc"},
-    version="0.1",
+    version="0.1.0.0",
     license="MIT",
     description="Generate markdown documentation for your Python scripts. "
                 "Like Sphinx, but simpler and directly compatible with GitHub.",
@@ -14,7 +14,7 @@ setup(
     author_email="subalterngames@gmail.com",
     url="https://github.com/subalterngames/py_md_doc",
     download_url="https://github.com/subalterngames/py_md_doc/archive/0.1.tar.gz",
-    keywords=["documentation", "doc", "sphinx"],
+    keywords=["documentation", "doc", "sphinx", "markdown", "github"],
     install_requires=[""],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
