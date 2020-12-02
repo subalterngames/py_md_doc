@@ -2,3 +2,4 @@
 py_md_doc.egg-info/
 py_md_doc/__pycache__/
 pypi.py
+dist/

@@ -2,7 +2,7 @@
 
 Generate markdown documentation for your Python scripts' code comments that is compatible with GitHub. It's like Sphinx, but with simpler requirements and results. It's also not as flexible as Sphinx and is mainly useful for scripts containing only a few classes.
 
-For example output, [see the code documentation for this module](docs/py_md_doc.md).
+For example output, [see the code documentation for this module](https://github.com/subalterngames/py_md_doc/blob/main/docs/py_md_doc.md).
 
 ## Installation
 
@@ -29,7 +29,7 @@ md = PyMdDoc(input_directory=Path("my_module/my_module"), files=["my_script.py"]
 md.get_docs(output_directory=Path("my_module/docs"))
 ```
 
-**For the full API, [read this](docs/py_md_doc.md).**
+**For the full API, [read this](https://github.com/subalterngames/py_md_doc/blob/main/docs/py_md_doc.md).**
 
 ## Code comments format
 
@@ -90,7 +90,7 @@ class MyEnum(Enum):
 
 ## Metadata file
 
-You can add an optional metadata dictionary (see [the constructor](docs/py_md_doc.md#__init__)).
+You can add an optional metadata dictionary (see [the constructor](https://github.com/subalterngames/py_md_doc/blob/main/docs/py_md_doc.md#__init__)).
 
 A metadata file is structured like this:
  
