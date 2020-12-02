@@ -6,7 +6,7 @@ setup(
     packages={"py_md_doc"},
     version="0.1.0.0",
     license="MIT",
-    description="Generate markdown documentation for your Python scripts. "
+    description="Generate markdown documentation for your Python scripts."
                 "Like Sphinx, but simpler and directly compatible with GitHub.",
     long_description=Path("README.md").read_text(encoding="utf-8"),
     long_description_content_type="text/markdown",
