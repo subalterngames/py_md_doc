@@ -35,6 +35,7 @@ md.get_docs(output_directory=Path("my_module/docs"))
 
 - One class per file.
 - Class descriptions begin and end with `"""` immediately after the class definition.
+- Class variables begin with `""":class_var` and end with `"""` and must be before the constructor declaration. The line immediately after them is the variable declaration.
 - Fields begin with `""":field` and end with `"""` in the constructor. The line immediately after them is the field declaration.
 - Function descriptions begin and end with `"""` immediately after the function definition.
   - Function parameter descriptions are lines within the function description that begin with `:param`
@@ -47,6 +48,11 @@ class MyClass:
     """
     This is the class description.
     """
+
+    """:class_var
+    This is a class variable.
+    """
+    CLASS_VAR: int = 0
 
     def __init__(self):
         """field:
@@ -108,7 +114,7 @@ A metadata file is structured like this:
     },
     "Helper Functions": {
       "description": "These functions are used in `get_docs()`. You generally won't need to call these yourself.",
-      "functions": ["get_class_description", "get_function_documentation", "get_enum_values", "get_fields"]
+      "functions": ["get_class_description", "get_class_variables", "get_function_documentation", "get_enum_values", "get_fields"]
     }
   }
 }
@@ -174,3 +180,11 @@ class AnotherClass:
     This class will be documented second.
     """
 ```
+
+# Changelog
+
+## 0.1.1
+
+- Added support for class variables.
+- Added much clearer code examples for function documentation.
+- Added parameter types to the function parameter tables.

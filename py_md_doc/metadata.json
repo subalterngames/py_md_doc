@@ -11,7 +11,7 @@
     },
     "Helper Functions": {
       "description": "These functions are used in `get_docs()`. You generally won't need to call these yourself.",
-      "functions": ["get_class_description", "get_function_documentation", "get_enum_values", "get_fields"]
+      "functions": ["get_class_description", "get_class_variables", "get_function_documentation", "get_enum_values", "get_fields"]
     }
   }
 }

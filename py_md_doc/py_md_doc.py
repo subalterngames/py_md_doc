@@ -19,6 +19,11 @@ class PyMdDoc:
 
     """
 
+    """:class_var
+    This is a test class variable. It doesn't do anything in this code other than test that the documentation generates correctly.
+    """
+    CLASS_VAR: int = 0
+
     def __init__(self, input_directory: Union[Path, str], files: List[str],
                  metadata_path: Union[Path, str] = None):
         """
@@ -148,7 +153,12 @@ class PyMdDoc:
                 # Parse an enum.
                 if re.search(r"class (.*)\(Enum\):", lines[i]) is not None:
                     doc += "\n\n" + PyMdDoc.get_enum_values(lines, i)
-                doc += "\n\n***\n\n"
+                else:
+                    doc += "\n\n***\n\n"
+                # Get class variables.
+                class_variables = PyMdDoc.get_class_variables(lines, i)
+                if class_variables != "":
+                    doc += f"## Class Variables\n\n{class_variables}\n\n***\n\n"
             # Create a function description.
             elif lines[i].strip().startswith("def "):
                 # Skip private functions.
@@ -161,7 +171,7 @@ class PyMdDoc:
                         doc += f"## Fields\n\n{field_documentation}\n\n***\n\n## Functions\n\n"
 
                 # Append the function description.
-                function_documentation = PyMdDoc.get_function_documentation(lines, i) + "\n\n"
+                function_documentation = PyMdDoc.get_function_documentation(lines, i, class_name) + "\n\n"
                 function_name = re.search("#### (.*)", function_documentation).group(1).replace("\\_", "_")
 
                 # Categorize the functions.
@@ -191,6 +201,38 @@ class PyMdDoc:
                 doc += "***\n\n"
 
         return doc
+
+    @staticmethod
+    def get_class_variables(lines: List[str], start_index: int) -> str:
+        """
+        :param lines: All of the lines of the file.
+        :param start_index: Start looking for fields at this line.
+
+        :return: A table of class variables as a string.
+        """
+
+        txt = ""
+        for i in range(start_index, len(lines)):
+            # We assume that all class variables are declared before the constructor.
+            if "def __init__" in lines[i]:
+                break
+            txt += lines[i] + "\n"
+        # Parse all lines that have class variable documentation.
+        class_var_lines = re.findall(r'""":class_var(((.*)+[\n]+)+?[\s]+)"""\n[\s]+(.*)=', txt, flags=re.MULTILINE)
+        if len(class_var_lines) <= 0:
+            return ""
+        # Create a table.
+        class_vars = "| Variable | Type | Description |\n| --- | --- | --- |\n"
+        for lines in class_var_lines:
+            desc = lines[0].strip()
+            var_split = lines[-1].split(":")
+            var = var_split[0]
+            if len(var_split) > 1:
+                var_type = var_split[1].strip()
+            else:
+                var_type = ""
+            class_vars += f"| `{var}` | {var_type} | {desc} |\n"
+        return class_vars.strip()
 
     @staticmethod
     def get_fields(lines: List[str], start_index: int) -> str:
@@ -251,18 +293,19 @@ class PyMdDoc:
         return class_desc
 
     @staticmethod
-    def get_function_documentation(lines: List[str], start_index: int) -> str:
+    def get_function_documentation(lines: List[str], start_index: int, class_name: str) -> str:
         """
         Create documentation for a function and its parameters.
 
         :param lines: The lines of the Python script.
         :param start_index: Start at this line to search for function documentation.
+        :param class_name: The name of the class. Used for static function documentation.
 
         :return: The function documentation string.
         """
 
         began_desc = False
-        func_desc = ""
+        function = ""
 
         txt = lines[start_index][:]
         # Get the definition string across multiple lines.
@@ -287,16 +330,11 @@ class PyMdDoc:
         # Used the shortened def string for the header.
         shortened_def_str = def_str.split("(")[0].replace("__", "\\_\\_")
 
-        def_str = def_str.replace("\\ ", "")
-        func_desc += "#### " + shortened_def_str + f"\n\n**`def {def_str}`**\n\n"
-
         is_static = lines[start_index - 1].strip() == "@staticmethod"
-        if is_static:
-            func_desc += "_This is a static function._\n\n"
 
         parameters: Dict[str, str] = {}
         return_description = ""
-
+        func_desc = ""
         for i in range(start_index + 1, len(lines)):
             line = lines[i].strip()
             if '"""' in line:
@@ -321,21 +359,52 @@ class PyMdDoc:
                 # Get the overview description of the function.
                 else:
                     func_desc += line + "\n"
-        if func_desc[-1] == "\n":
-            func_desc = func_desc[:-1]
+        def_str = def_str.replace("\\ ", "")
+
+        # Get some example code.
+        if is_static:
+            example_call = f"{class_name}.{shortened_def_str}("
+        else:
+            if shortened_def_str == "\\_\\_init\\_\\_":
+                example_call = f"{class_name.split('(')[0]}("
+            else:
+                example_call = f"self.{shortened_def_str}("
+        for parameter in parameters:
+            example_call += parameter + ", "
+        if example_call.endswith(", "):
+            example_call = example_call[:-2]
+        example_call += ")"
+
+        function += f"#### {shortened_def_str}\n\n**`{example_call}`**\n\n"
+        if is_static:
+            function += "_This is a static function._\n\n"
+        function += func_desc
+
+        if function[-1] == "\n":
+            function = function[:-1]
         # Add the paramter table.
         if len(parameters) > 0:
-            func_desc += "\n| Parameter | Description |\n| --- | --- |\n"
+            function += "\n| Parameter | Type | Description |\n| --- | --- | --- |\n"
             for parameter in parameters:
-                func_desc += "| " + parameter + " | " + parameters[parameter] + " |\n"
-            func_desc += "\n"
+                # Get the parameter type from the def string.
+                param_type = re.search(parameter + r":(.*?)[:|=|\)]", def_str)
+                if param_type is None:
+                    param_type = ""
+                else:
+                    param_type = param_type.group(1)
+                    if "]" in param_type:
+                        param_type = param_type.split("]")[0] + "]"
+                    else:
+                        param_type = param_type.split(",")[0]
+                function += f"| {parameter} | {param_type} | {parameters[parameter]} |\n"
+            function += "\n"
         # Remove trailing new lines.
-        while func_desc[-1] == "\n":
-            func_desc = func_desc[:-1]
+        while function[-1] == "\n":
+            function = function[:-1]
         # Add the return value.
         if return_description != "":
-            func_desc += "\n\n_Returns:_ " + return_description
-        return func_desc
+            function += "\n\n_Returns:_ " + return_description
+        return function
 
     @staticmethod
     def get_enum_values(lines: List[str], start_index: int) -> str:
