@@ -1,16 +1,18 @@
 # PyMdDoc
 
-`from  import PyMdDoc`
+`from py_md_doc import PyMdDoc`
 
 Generate Markdown documentation for your Python scripts.
 
 ```python
-from py_md_doc import PyMdDoc
 from pathlib import Path
+from py_md_doc import PyMdDoc
 
-# Generates the documentation for the py_md_doc module.
-md = PyMdDoc(input_directory=Path("."), files=["py_md_doc.py"], metadata_path="metadata.json")
-md.get_docs(output_directory=Path("../doc"))
+if __name__ == "__main__":
+    md = PyMdDoc(input_directory=Path("."),
+                 files=["py_md_doc/py_md_doc.py", "py_md_doc/parameter.py"],
+                 metadata_path="metadata.json")
+    md.get_docs(output_directory=Path("docs"))
 ```
 
 ***
@@ -48,13 +50,15 @@ print(md.root_import_name) # my_module
 
 #### \_\_init\_\_
 
-**`PyMdDoc(input_directory, files, metadata_path)`**
+**`PyMdDoc(input_directory, files)`**
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| input_directory |  Union[Path, str] | The path to the root input directory for the Python scripts. Can be a `Path` or `str`. |
-| files |  List[str] | A list of Python script filenames relative to `input_directory`. This script will generate documentation only for these files. |
-| metadata_path |  Union[Path, str] | The path to the metadata file. Can be None. See the README for how to format this file. |
+**`PyMdDoc(input_directory, files, metadata_path=None)`**
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| input_directory |  Union[Path, str] |  | The path to the root input directory for the Python scripts. Can be a `Path` or `str`. |
+| files |  List[str] |  | A list of Python script filenames relative to `input_directory`. This script will generate documentation only for these files. |
+| metadata_path |  Union[Path, str] | None | The path to the metadata file. Can be None. See the README for how to format this file. |
 
 ***
 
@@ -68,9 +72,9 @@ _Use these functions to generate your documentation._
 
 Generate documents for all of the Python files and write them to disk.
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| output_directory |  Union[Path, str] | The path to the output directory. Can be of type `Path` or `str`. |
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| output_directory |  Union[Path, str] |  | The path to the output directory. Can be of type `Path` or `str`. |
 
 #### get_doc
 
@@ -78,9 +82,9 @@ Generate documents for all of the Python files and write them to disk.
 
 Create a document from a Python file with the API for each class. Returns the document as a string.
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| file |  Path | The path to the Python script. |
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| file |  Path |  | The path to the Python script. |
 
 ***
 
@@ -95,10 +99,10 @@ _These functions are used in `get_docs()`. You generally won't need to call thes
 _This is a static function._
 
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| lines |  List[str] | All of the lines of the file. |
-| start_index |  int | Start looking for fields at this line. |
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| lines |  List[str] |  | All of the lines of the file. |
+| start_index |  int |  | Start looking for fields at this line. |
 
 _Returns:_  A table of class variables as a string.
 
@@ -111,10 +115,10 @@ _This is a static function._
 Get the field descriptions for this class.
 
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| lines |  List[str] | All of the lines of the file. |
-| start_index |  int | Start looking for fields at this line. |
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| lines |  List[str] |  | All of the lines of the file. |
+| start_index |  int |  | Start looking for fields at this line. |
 
 _Returns:_  A string of field documentation.
 
@@ -127,9 +131,9 @@ _This is a static function._
 Parses a file starting at a line defined by start_index to get the class name and description.
 This assumes that the class has a triple quote description.
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| file_txt |  str | All of the text of the file. |
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| file_txt |  str |  | All of the text of the file. |
 
 #### get_function_documentation
 
@@ -140,11 +144,11 @@ _This is a static function._
 Create documentation for a function and its parameters.
 
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| lines |  List[str] | The lines of the Python script. |
-| start_index |  int | Start at this line to search for function documentation. |
-| class_name |  str | The name of the class. Used for static function documentation. |
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| lines |  List[str] |  | The lines of the Python script. |
+| start_index |  int |  | Start at this line to search for function documentation. |
+| class_name |  str |  | The name of the class. Used for static function documentation. |
 
 _Returns:_  The function documentation string.
 
@@ -156,10 +160,10 @@ _This is a static function._
 
 Returns a list of enum values.
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| lines |  List[str] | The lines in the document. |
-| start_index |  int | The line of the class defintion. |
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| lines |  List[str] |  | The lines in the document. |
+| start_index |  int |  | The line of the class defintion. |
 
 ***
 

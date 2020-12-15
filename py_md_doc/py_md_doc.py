@@ -2,6 +2,7 @@ from json import loads
 from pathlib import Path
 import re
 from typing import List, Dict, Union
+from py_md_doc.parameter import Parameter
 
 
 class PyMdDoc:
@@ -9,12 +10,14 @@ class PyMdDoc:
     Generate Markdown documentation for your Python scripts.
 
     ```python
-    from py_md_doc import PyMdDoc
     from pathlib import Path
+    from py_md_doc import PyMdDoc
 
-    # Generates the documentation for the py_md_doc module.
-    md = PyMdDoc(input_directory=Path("."), files=["py_md_doc.py"], metadata_path="metadata.json")
-    md.get_docs(output_directory=Path("../doc"))
+    if __name__ == "__main__":
+        md = PyMdDoc(input_directory=Path("."),
+                     files=["py_md_doc/py_md_doc.py", "py_md_doc/parameter.py"],
+                     metadata_path="metadata.json")
+        md.get_docs(output_directory=Path("docs"))
     ```
 
     """
@@ -332,7 +335,7 @@ class PyMdDoc:
 
         is_static = lines[start_index - 1].strip() == "@staticmethod"
 
-        parameters: Dict[str, str] = {}
+        parameters: Dict[str, Parameter] = {}
         return_description = ""
         func_desc = ""
         for i in range(start_index + 1, len(lines)):
@@ -350,7 +353,7 @@ class PyMdDoc:
                 if line.startswith(":param"):
                     param_name = line[7:].split(":")[0]
                     param_desc = line.replace(":param " + param_name + ": ", "").strip()
-                    parameters.update({param_name: param_desc})
+                    parameters[param_name] = Parameter(name=param_name, description=param_desc, def_str=def_str)
                 elif line == "":
                     func_desc += "\n"
                 # Get the return description
@@ -363,19 +366,36 @@ class PyMdDoc:
 
         # Get some example code.
         if is_static:
-            example_call = f"{class_name}.{shortened_def_str}("
+            call = f"{class_name}.{shortened_def_str}("
         else:
             if shortened_def_str == "\\_\\_init\\_\\_":
-                example_call = f"{class_name.split('(')[0]}("
+                call = f"{class_name.split('(')[0]}("
             else:
-                example_call = f"self.{shortened_def_str}("
-        for parameter in parameters:
-            example_call += parameter + ", "
-        if example_call.endswith(", "):
-            example_call = example_call[:-2]
-        example_call += ")"
+                call = f"self.{shortened_def_str}("
 
-        function += f"#### {shortened_def_str}\n\n**`{example_call}`**\n\n"
+        short_call = call[:]
+        long_call = call[:]
+        for p in parameters:
+            long_call += parameters[p].name
+            # Add default values to the long call example.
+            if parameters[p].default_value != "":
+                long_call += f"={parameters[p].default_value}"
+            # If there isn't a default value, add the parameter to the short call.
+            else:
+                short_call += parameters[p].name + ", "
+            long_call += ", "
+        if short_call.endswith(", "):
+            short_call = short_call[:-2]
+        if long_call.endswith(", "):
+            long_call = long_call[:-2]
+        short_call += ")"
+        long_call += ")"
+
+        function += f"#### {shortened_def_str}\n\n"
+        if short_call == long_call:
+            function += f"**`{short_call}`**\n\n"
+        else:
+            function += f"**`{short_call}`**\n\n**`{long_call}`**\n\n"
         if is_static:
             function += "_This is a static function._\n\n"
         function += func_desc
@@ -384,19 +404,11 @@ class PyMdDoc:
             function = function[:-1]
         # Add the paramter table.
         if len(parameters) > 0:
-            function += "\n| Parameter | Type | Description |\n| --- | --- | --- |\n"
-            for parameter in parameters:
-                # Get the parameter type from the def string.
-                param_type = re.search(parameter + r":(.*?)[:|=|\)]", def_str)
-                if param_type is None:
-                    param_type = ""
-                else:
-                    param_type = param_type.group(1)
-                    if "]" in param_type:
-                        param_type = param_type.split("]")[0] + "]"
-                    else:
-                        param_type = param_type.split(",")[0]
-                function += f"| {parameter} | {param_type} | {parameters[parameter]} |\n"
+            function += "\n| Parameter | Type | Default | Description |\n| --- | --- | --- | --- |\n"
+            for p in parameters:
+                parameter = parameters[p]
+                function += f"| {parameter.name} | {parameter.param_type} | {parameter.default_value} |" \
+                            f" {parameter.description} |\n"
             function += "\n"
         # Remove trailing new lines.
         while function[-1] == "\n":
@@ -440,8 +452,3 @@ class PyMdDoc:
                 desc = ""
             enum_desc += f"| {val} | {desc} |\n"
         return enum_desc.strip()
-
-
-if __name__ == "__main__":
-    md = PyMdDoc(input_directory=Path("."), files=["py_md_doc.py"], metadata_path="metadata.json")
-    md.get_docs(output_directory=Path("../docs"))

@@ -15,8 +15,8 @@ pip3 install py-md-doc
 To generate the documentation for this module:
 
 1. Clone this repo.
-2. `cd path/to/py_md_doc` (replace `path_to`) with the actual path to this repo.)
-3. `python3  py_md_doc.py`
+2. `cd path/to/py_md_doc` (Replace `path_to`) with the actual path to this repo.)
+3. `python3 doc_gen.py`
 
 To generate documentation for your own module:
 
@@ -99,7 +99,7 @@ class MyEnum(Enum):
 You can add an optional metadata dictionary (see [the constructor](https://github.com/subalterngames/py_md_doc/blob/main/docs/py_md_doc.md#__init__)).
 
 A metadata file is structured like this:
- 
+
 ```json
 {
   "PyMdDoc":
@@ -182,6 +182,13 @@ class AnotherClass:
 ```
 
 # Changelog
+
+## 0.1.2
+
+- All functions that have parameters with default values now have two example code strings: a "short" example (parameters with default values aren't included) and a "long" example (all parameters with default values are explicitly assigned).
+- Added default values to parameter table.
+- Added: `parameter.py` to hold parameter information.
+- Moved the documentation generation code for this module to `doc_gen.py` to avoid import path errors.
 
 ## 0.1.1
 
