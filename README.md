@@ -122,7 +122,8 @@ A metadata file is structured like this:
 
 - The top-order key of the dictionary (`"PyMdDoc"`) is the name of the class. You don't need to add every class that you wish to document. If the class is not listed in `metadata.json` but is listed in the `files` parameter, its functions will be documented in the order they appear in the script.
 - Each key in the class metadata (`"Constructor"`, `"Documentation Generation"`, `"Helper Functions"`) is a section.
-  - Each section name will be a header in the document, except for `"Constructor"`.
+  - Each section name will be a header in the document, except for `"Constructor"` and `"Ignore"`.
+  - Any function in the `"Ignore"` category won't be documented.
   - Each section has a `"description"` and a list of names of `"functions"`. The functions will appear in the section in the order they appear in this list.
 - If the class name is listed in `metadata.json` and a function name can't be found in any of the section lists, the console will output a warning. For example, if you were to add a function named `new_function()` to `PyMdDoc`, you'd have to add it to a section in the metadata file as well because `PyMdDoc` is a key in the metadata dictionary.
 
@@ -182,6 +183,10 @@ class AnotherClass:
 ```
 
 # Changelog
+
+## 0.1.3
+
+- Added: Special category `Ignore` to metadata. Functions in this category will be ignored.
 
 ## 0.1.2
 

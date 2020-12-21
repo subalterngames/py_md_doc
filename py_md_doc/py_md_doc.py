@@ -195,6 +195,9 @@ class PyMdDoc:
                     functions_by_categories[function_category].append(function_documentation)
         if class_name in self.metadata:
             for category in self.metadata[class_name]:
+                # Ignore anything in the Ignore category.
+                if category == "Ignore":
+                    continue
                 if category != "Constructor":
                     doc += f"### {category}\n\n"
                     if self.metadata[class_name][category]["description"] != "":
