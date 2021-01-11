@@ -220,7 +220,7 @@ class PyMdDoc:
         txt = ""
         for i in range(start_index, len(lines)):
             # We assume that all class variables are declared before the constructor.
-            if "def __init__" in lines[i]:
+            if "def __init__" in lines[i] or lines[i].startswith("class "):
                 break
             txt += lines[i] + "\n"
         # Parse all lines that have class variable documentation.
@@ -362,6 +362,8 @@ class PyMdDoc:
                 # Get the return description
                 elif line.startswith(":return:"):
                     return_description = line[8:]
+                elif line.startswith(":return"):
+                    return_description = line[7:]
                 # Get the overview description of the function.
                 else:
                     func_desc += line + "\n"
