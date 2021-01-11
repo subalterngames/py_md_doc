@@ -184,6 +184,12 @@ class AnotherClass:
 
 # Changelog
 
+## 0.1.4
+
+- Fixed: Can't find `:return` decorators (expecting only `:return:`).
+- Fixed: Unhandled exception if there's more than one class in the file.
+- Added: `social.jpg`
+
 ## 0.1.3
 
 - Added: Special category `Ignore` to metadata. Functions in this category will be ignored.
