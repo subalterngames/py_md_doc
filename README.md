@@ -184,6 +184,10 @@ class AnotherClass:
 
 # Changelog
 
+### 0.1.5
+
+- Fixed: Class variables aren't included in documentation.
+
 ## 0.1.4
 
 - Fixed: Can't find `:return` decorators (expecting only `:return:`).

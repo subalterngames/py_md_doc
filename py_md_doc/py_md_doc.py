@@ -220,7 +220,7 @@ class PyMdDoc:
         txt = ""
         for i in range(start_index, len(lines)):
             # We assume that all class variables are declared before the constructor.
-            if "def __init__" in lines[i] or lines[i].startswith("class "):
+            if "def __init__" in lines[i]:
                 break
             txt += lines[i] + "\n"
         # Parse all lines that have class variable documentation.
