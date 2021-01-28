@@ -201,7 +201,9 @@ class PyMdDoc:
                 if category != "Constructor":
                     doc += f"### {category}\n\n"
                     if self.metadata[class_name][category]["description"] != "":
-                        doc += f'_{self.metadata[class_name][category]["description"]}_\n\n'
+                        category_desc = self.metadata[class_name][category]["description"]
+                        category_desc = re.sub(r"^(.(.*))", r"_\1_", category_desc, flags=re.MULTILINE)
+                        doc += f'{category_desc}\n\n'
                 for function in functions_by_categories[category]:
                     doc += function
                 doc += "***\n\n"
@@ -367,7 +369,6 @@ class PyMdDoc:
                 # Get the overview description of the function.
                 else:
                     func_desc += line + "\n"
-        def_str = def_str.replace("\\ ", "")
 
         # Get some example code.
         if is_static:
