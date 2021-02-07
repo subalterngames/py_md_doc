@@ -184,6 +184,10 @@ class AnotherClass:
 
 # Changelog
 
+### 0.1.7
+
+- Fixed: Class variable types are sometimes parsed incorrectly.
+
 ### 0.1.6
 
 - Fixed: Category description formatting breaks if there are line breaks.

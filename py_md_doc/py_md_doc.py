@@ -236,7 +236,7 @@ class PyMdDoc:
             var_split = lines[-1].split(":")
             var = var_split[0]
             if len(var_split) > 1:
-                var_type = var_split[1].strip()
+                var_type = var_split[1].split("=")[0].strip()
             else:
                 var_type = ""
             class_vars += f"| `{var}` | {var_type} | {desc} |\n"
