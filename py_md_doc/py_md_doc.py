@@ -130,7 +130,7 @@ class PyMdDoc:
 
         class_name = ""
         functions_by_categories = {"": []}
-
+        looking_for_class: bool = True
         for i in range(len(lines)):
             # Create a class description.
             if lines[i].startswith("class"):
@@ -138,6 +138,7 @@ class PyMdDoc:
                 match = re.search("class _(.*):", lines[i])
                 if match is not None:
                     continue
+                looking_for_class = False
                 # Add the name of the class
                 class_name = re.search("class (.*):", lines[i]).group(1)
                 class_header = re.sub(r"(.*)\((.*)\)", r"\1", class_name)
@@ -163,7 +164,7 @@ class PyMdDoc:
                 if class_variables != "":
                     doc += f"## Class Variables\n\n{class_variables}\n\n***\n\n"
             # Create a function description.
-            elif lines[i].strip().startswith("def "):
+            elif lines[i].strip().startswith("def ") and not looking_for_class:
                 # Skip private functions.
                 match = re.search("def _(.*)", lines[i])
                 if match is not None and "__init__" not in lines[i]:
@@ -293,8 +294,8 @@ class PyMdDoc:
         :param file_txt: All of the text of the file.
         """
 
-        class_desc = re.search(r'class (.*):\n[\s]+"""\n([\s]+((.*)+[\n]+)+?[\s]+)"""', file_txt,
-                               flags=re.MULTILINE).group(2)
+        class_desc = re.search(r'class ([aA-Zz](.*)):\n[\s]+"""\n([\s]+((.*)+[\n]+)+?[\s]+)"""', file_txt,
+                               flags=re.MULTILINE).group(3)
         class_desc = re.sub(r"(\A *\d+\. *|^ {0,4})", r"", class_desc, flags=re.MULTILINE)
         # Remove trailing new lines.
         class_desc = class_desc.strip()

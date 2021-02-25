@@ -184,6 +184,10 @@ class AnotherClass:
 
 # Changelog
 
+### 0.1.8
+
+- Fixed: Data from hidden classes (classes with names that begin with `_`) is included in the documentation, either within the main class documentation or above it without a header. Now, it's never included.
+
 ### 0.1.7
 
 - Fixed: Class variable types are sometimes parsed incorrectly.
