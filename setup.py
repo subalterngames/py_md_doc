@@ -4,7 +4,7 @@ from pathlib import Path
 setup(
     name="py_md_doc",
     packages={"py_md_doc"},
-    version="0.1.8",
+    version="0.1.9",
     license="MIT",
     description="Generate markdown documentation for your Python scripts."
                 "Like Sphinx, but simpler and directly compatible with GitHub.",

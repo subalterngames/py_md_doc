@@ -113,7 +113,7 @@ class PyMdDoc:
             # Create the documentation.
             doc = self.get_doc(f)
             # Name the document based on the name of the Python script. Write it to disk.
-            output_directory.joinpath(f.name[:-3] + ".md").write_text(doc)
+            output_directory.joinpath(f.name[:-3] + ".md").write_text(doc, encoding="utf-8")
 
     def get_doc(self, file: Path) -> str:
         """

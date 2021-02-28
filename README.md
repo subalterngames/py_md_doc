@@ -184,6 +184,10 @@ class AnotherClass:
 
 # Changelog
 
+### 0.1.9
+
+- Fixed: Crash when writing text if the text has non-ASCII characters.
+
 ### 0.1.8
 
 - Fixed: Data from hidden classes (classes with names that begin with `_`) is included in the documentation, either within the main class documentation or above it without a header. Now, it's never included.
