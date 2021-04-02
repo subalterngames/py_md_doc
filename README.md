@@ -184,6 +184,11 @@ class AnotherClass:
 
 # Changelog
 
+### 0.1.10
+
+- Don't italicize section descriptions.
+- Automatically generate a table of contents it `[TOC]` is present in the document.
+
 ### 0.1.9
 
 - Fixed: Crash when writing text if the text has non-ASCII characters.

@@ -203,12 +203,13 @@ class PyMdDoc:
                     doc += f"### {category}\n\n"
                     if self.metadata[class_name][category]["description"] != "":
                         category_desc = self.metadata[class_name][category]["description"]
-                        category_desc = re.sub(r"^(.(.*))", r"_\1_", category_desc, flags=re.MULTILINE)
+                        category_desc = re.sub(r"^(.(.*))", r"\1", category_desc, flags=re.MULTILINE)
                         doc += f'{category_desc}\n\n'
                 for function in functions_by_categories[category]:
                     doc += function
                 doc += "***\n\n"
-
+        # Add a table of contents
+        doc = doc.replace("[TOC]", PyMdDoc.get_toc(doc))
         return doc
 
     @staticmethod
@@ -459,3 +460,33 @@ class PyMdDoc:
                 desc = ""
             enum_desc += f"| {val} | {desc} |\n"
         return enum_desc.strip()
+
+    @staticmethod
+    def get_toc(doc: str) -> str:
+        """
+        :param doc: The document.
+
+        :return: The table of contents of the document.
+        """
+
+        toc = "## Overview of API\n\n"
+        for header in re.findall(r"^## (.*)", doc, flags=re.MULTILINE):
+            toc += f"- [{header}](#{header.lower().replace(' ', '-')})\n"
+        toc = toc.strip()
+
+        # Append functions to the table of contents.
+        if "## Functions" in doc:
+            # Get a table of functions.
+            functions = "\n\n| Function | Description |\n| --- | --- |\n"
+            for function in re.findall(r"^#### (.*)", doc.split("## Functions")[1], flags=re.MULTILINE):
+                # Get the full description of the function.
+                desc = re.search(r"^#### " + function + r"(.*)((.|\n)*?)^(\*\*[A-Z].*\.|[A-Z].*\.)", doc,
+                                 flags=re.MULTILINE)
+                if desc is None:
+                    functions += f"| [{function}](#{function}) | |\n"
+                else:
+                    # Get the first sentence. Exclude sentences that are bolded.
+                    desc = re.search(r"(^\*\*(.*?)\*\* |^)(.*?\.)($| [A-Z])", desc.group(4))
+                    functions += f"| [{function}](#{function}) | {desc.group(3)} |\n"
+            toc += functions
+        return toc.strip()
