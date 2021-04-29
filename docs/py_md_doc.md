@@ -64,7 +64,7 @@ print(md.root_import_name) # my_module
 
 ### Documentation Generation
 
-_Use these functions to generate your documentation._
+Use these functions to generate your documentation.
 
 #### get_docs
 
@@ -90,7 +90,7 @@ Create a document from a Python file with the API for each class. Returns the do
 
 ### Helper Functions
 
-_These functions are used in `get_docs()`. You generally won't need to call these yourself._
+These functions are used in `get_docs()`. You generally won't need to call these yourself.
 
 #### get_class_variables
 
@@ -164,6 +164,19 @@ Returns a list of enum values.
 | --- | --- | --- | --- |
 | lines |  List[str] |  | The lines in the document. |
 | start_index |  int |  | The line of the class defintion. |
+
+#### get_toc
+
+**`PyMdDoc.get_toc(doc)`**
+
+_This is a static function._
+
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| doc |  str |  | The document. |
+
+_Returns:_  The table of contents of the document.
 
 ***
 

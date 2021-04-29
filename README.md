@@ -182,7 +182,15 @@ class AnotherClass:
     """
 ```
 
+## `VarDoc`
+
+To create API documentation for a script that contains only variables (no classes or functions), use [`VarDoc`](https://github.com/subalterngames/py_md_doc/blob/main/docs/var_doc.md).
+
 # Changelog
+
+### 0.2.0
+
+- Added: `VarDoc` Create documentation of variables.
 
 ### 0.1.10
 
