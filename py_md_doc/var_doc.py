@@ -48,8 +48,9 @@ class VarDoc:
             name = f"`{name}`"
             value = v[2].strip()
             table += f"| {name} | {v_type} | {value} | {desc} |\n"
+        doc = f"# {src.parent.parts[-1]}.{src.name[:-3]}\n\n{table}"
         if dst is not None:
             if isinstance(dst, str):
                 dst = Path(dst)
-            dst.write_text(table)
-        return table
+            dst.write_text(doc)
+        return doc
