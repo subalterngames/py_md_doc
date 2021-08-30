@@ -188,6 +188,10 @@ To create API documentation for a script that contains only variables (no classe
 
 # Changelog
 
+### 0.2.3
+
+- Fixed: `get_docs_with_inheritance()` returns the abstract class document for a child class if there are any `@final` attribute headers.
+
 ### 0.2.2
 
 - Added: `get_docs_with_inheritance()` Basic support for API documentation with class inheritance.

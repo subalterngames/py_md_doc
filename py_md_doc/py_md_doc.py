@@ -281,6 +281,7 @@ class PyMdDoc:
             final_defs: List[str] = re.findall(r"@final\n\s+def (.*?)\(", child_py, flags=re.MULTILINE)
             # Generate the base document.
             child_doc = self.get_doc(child_class_path)
+
             # Append class variables.
             if len(abstract_class_variables) > 0:
                 class_variables_search = re.search(r"## Class Variables\n((.|\n)*?)\*", child_doc)
@@ -330,7 +331,7 @@ class PyMdDoc:
                         child_doc += q + "\n\n"
             # Append final markers.
             for final_def in final_defs:
-                child_doc = re.sub(f"(#### {final_def})(.*)", r"\1\n\n_(Final)_\2", abstract_doc,
+                child_doc = re.sub(f"(#### {final_def})(.*)", r"\1\n\n_(Final)_\2", child_doc,
                                    flags=re.MULTILINE)
             # Store this document.
             docs[child_class_path.name[:-3]] = child_doc
@@ -427,7 +428,7 @@ class PyMdDoc:
 
         :param file_txt: All of the text of the file.
         """
-
+        
         class_desc = re.search(r'class ([aA-Zz](.*)):\n[\s]+"""\n([\s]+((.*)+[\n]+)+?[\s]+)"""', file_txt,
                                flags=re.MULTILINE).group(3)
         class_desc = re.sub(r"(\A *\d+\. *|^ {0,4})", r"", class_desc, flags=re.MULTILINE)
