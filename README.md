@@ -188,6 +188,11 @@ To create API documentation for a script that contains only variables (no classe
 
 # Changelog
 
+### 0.2.4
+
+- Fixed: Various issues with functions not appearing correctly or not appearing at all with `get_docs_with_inheritance()`.
+- Fixed: There is no `## Functions` header if there aren't also fields.
+
 ### 0.2.3
 
 - Fixed: `get_docs_with_inheritance()` returns the abstract class document for a child class if there are any `@final` attribute headers.

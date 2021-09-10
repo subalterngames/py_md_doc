@@ -173,6 +173,8 @@ class PyMdDoc:
                     field_documentation = PyMdDoc.get_fields(lines, i)
                     if field_documentation != "":
                         doc += f"## Fields\n\n{field_documentation}\n\n***\n\n## Functions\n\n"
+                    else:
+                        doc += "## Functions\n\n"
 
                 # Append the function description.
                 function_documentation = PyMdDoc.get_function_documentation(lines, i, class_name) + "\n\n"
@@ -220,7 +222,7 @@ class PyMdDoc:
 
         :param abstract_class_path: The path to the abstract or base class.
         :param child_class_paths: A list of paths to the child classes.
-        :param import_prefix: If not None, replace the import prefix with this import prefix.`
+        :param import_prefix: If not None, replace the import prefix with this import prefix.
 
         :return: A dictionary. Key = The name of the class. Value = The markdown documentation as a string.
         """
@@ -322,19 +324,30 @@ class PyMdDoc:
                 for f in abstract_functions:
                     # Replace existing functions.
                     if f"#### {f}" in child_doc:
-                        child_doc = re.sub(f"(#### {f}" + "((.|\n)*?))(#|\\Z)", abstract_functions[f], child_doc,
+                        q = abstract_functions[f]
+                        if q.endswith("\n\n#"):
+                            q = q[:-3]
+                        if not q.endswith("\n\n"):
+                            q += "\n\n"
+                        child_doc = re.sub(f"(#### {f}" + r"((.|\n)*?))(#|\Z)", q, child_doc,
                                            flags=re.MULTILINE)
+                        child_doc = child_doc.replace(f"### {f}", f"#### {f}")
                     else:
                         q = abstract_functions[f]
                         if q.endswith("\n\n#"):
                             q = q[:-3]
+                        if not child_doc.endswith("\n"):
+                            child_doc += "\n\n"
                         child_doc += q + "\n\n"
+                        child_doc = child_doc.replace(f"### {f}", f"#### {f}")
+
             # Append final markers.
             for final_def in final_defs:
                 child_doc = re.sub(f"(#### {final_def})(.*)", r"\1\n\n_(Final)_\2", child_doc,
                                    flags=re.MULTILINE)
             # Store this document.
             docs[child_class_path.name[:-3]] = child_doc
+
         # Mark abstract functions.
         for abstract_def in abstract_defs:
             abstract_doc = re.sub(f"(#### {abstract_def})(.*)", r"\1\n\n_(Abstract)_\2", abstract_doc,
