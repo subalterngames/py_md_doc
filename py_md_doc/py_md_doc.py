@@ -283,6 +283,7 @@ class PyMdDoc:
             final_defs: List[str] = re.findall(r"@final\n\s+def (.*?)\(", child_py, flags=re.MULTILINE)
             # Generate the base document.
             child_doc = self.get_doc(child_class_path)
+            child_functions = re.findall("#### (.*)\n", child_doc, flags=re.MULTILINE)
 
             # Append class variables.
             if len(abstract_class_variables) > 0:
@@ -331,7 +332,6 @@ class PyMdDoc:
                             q += "\n\n"
                         child_doc = re.sub(f"(#### {f}" + r"((.|\n)*?))(#|\Z)", q, child_doc,
                                            flags=re.MULTILINE)
-                        child_doc = child_doc.replace(f"### {f}", f"#### {f}")
                     else:
                         q = abstract_functions[f]
                         if q.endswith("\n\n#"):
@@ -339,12 +339,17 @@ class PyMdDoc:
                         if not child_doc.endswith("\n"):
                             child_doc += "\n\n"
                         child_doc += q + "\n\n"
-                        child_doc = child_doc.replace(f"### {f}", f"#### {f}")
+                    child_doc = child_doc.replace(f"### {f}", f"#### {f}")
+                    child_doc = child_doc.replace(f"##### {f}", f"#### {f}")
 
             # Append final markers.
             for final_def in final_defs:
                 child_doc = re.sub(f"(#### {final_def})(.*)", r"\1\n\n_(Final)_\2", child_doc,
                                    flags=re.MULTILINE)
+
+            # Fix headers.
+            for child_function in child_functions:
+                child_doc = re.sub(r"^### " + child_function, f"#### {child_function}", child_doc, flags=re.MULTILINE)
             # Store this document.
             docs[child_class_path.name[:-3]] = child_doc
 
