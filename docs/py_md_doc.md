@@ -70,21 +70,27 @@ Use these functions to generate your documentation.
 
 **`self.get_docs(output_directory)`**
 
+**`self.get_docs(output_directory, import_prefix=None)`**
+
 Generate documents for all of the Python files and write them to disk.
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
 | output_directory |  Union[Path, str] |  | The path to the output directory. Can be of type `Path` or `str`. |
+| import_prefix |  str  | None | If not None, replace the import prefix with this import prefix. |
 
 #### get_doc
 
 **`self.get_doc(file)`**
+
+**`self.get_doc(file, import_prefix=None)`**
 
 Create a document from a Python file with the API for each class. Returns the document as a string.
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
 | file |  Path |  | The path to the Python script. |
+| import_prefix |  str  | None | If not None, replace the import prefix with this import prefix. |
 
 #### get_docs_with_inheritance
 
@@ -99,7 +105,7 @@ Generate documentation with basic (one level deep) class inheritance.
 | --- | --- | --- | --- |
 | abstract_class_path |  Union[str, Path] |  | The path to the abstract or base class. |
 | child_class_paths |  List[Union[str, Path] |  | A list of paths to the child classes. |
-| import_prefix |  str  | None | If not None, replace the import prefix with this import prefix.` |
+| import_prefix |  str  | None | If not None, replace the import prefix with this import prefix. |
 
 _Returns:_  A dictionary. Key = The name of the class. Value = The markdown documentation as a string.
 

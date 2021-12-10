@@ -92,11 +92,12 @@ class PyMdDoc:
                 if special_import_match is not None:
                     self.special_imports.append(special_import_match.group(2))
 
-    def get_docs(self, output_directory: Union[Path, str]) -> None:
+    def get_docs(self, output_directory: Union[Path, str], import_prefix: str = None) -> None:
         """
         Generate documents for all of the Python files and write them to disk.
 
         :param output_directory: The path to the output directory. Can be of type `Path` or `str`.
+        :param import_prefix: If not None, replace the import prefix with this import prefix.
         """
 
         if isinstance(output_directory, Path):
@@ -111,15 +112,16 @@ class PyMdDoc:
 
         for f in self.files:
             # Create the documentation.
-            doc = self.get_doc(f)
+            doc = self.get_doc(file=f, import_prefix=import_prefix)
             # Name the document based on the name of the Python script. Write it to disk.
             output_directory.joinpath(f.name[:-3] + ".md").write_text(doc, encoding="utf-8")
 
-    def get_doc(self, file: Path) -> str:
+    def get_doc(self, file: Path, import_prefix: str = None) -> str:
         """
         Create a document from a Python file with the API for each class. Returns the document as a string.
 
         :param file: The path to the Python script.
+        :param import_prefix: If not None, replace the import prefix with this import prefix.
         """
 
         # Create the header.
@@ -210,8 +212,10 @@ class PyMdDoc:
                 for function in functions_by_categories[category]:
                     doc += function
                 doc += "***\n\n"
-        # Add a table of contents
+        # Add a table of contents.
         doc = doc.replace("[TOC]", PyMdDoc.get_toc(doc))
+        # Add an import prefix.
+        doc = PyMdDoc._get_doc_with_import_prefix(doc=doc, import_prefix=import_prefix)
         return doc
 
     def get_docs_with_inheritance(self, abstract_class_path: Union[str, Path],
@@ -642,3 +646,17 @@ class PyMdDoc:
                     functions += f"| [{function}](#{function}) | {desc.group(3)} |\n"
             toc += functions
         return toc.strip()
+
+    @staticmethod
+    def _get_doc_with_import_prefix(doc: str, import_prefix: str = None) -> str:
+        """
+        :param doc: The document text.
+        :param import_prefix: The import prefix. If None, this function returns `doc` unmodified.
+
+        :return: The document with a custom import prefix.
+        """
+
+        if import_prefix is None:
+            return doc
+        else:
+            return re.sub(r"(`from (.*?)\.)(.*)$", "`" + import_prefix + ".\\3", doc, flags=re.MULTILINE)

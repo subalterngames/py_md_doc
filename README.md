@@ -188,6 +188,10 @@ To create API documentation for a script that contains only variables (no classe
 
 # Changelog
 
+### 0.2.5
+
+- Added optional parameter `import_prefix` to `PyMdDoc.get_doc()` and `PyMdDoc.get_docs()`.
+
 ### 0.2.4
 
 - Fixed: Various issues with functions not appearing correctly or not appearing at all with `get_docs_with_inheritance()`.
