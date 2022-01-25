@@ -157,7 +157,12 @@ class PyMdDoc:
                 doc += import_example + "\n\n"
                 doc += PyMdDoc.get_class_description(file_txt)
                 # Parse an enum.
-                if re.search(r"class (.*)\(Enum\):", lines[i]) is not None:
+                is_enum = False
+                for enum_type in ["Enum", "IntEnum", "IntFlag", "Flag"]:
+                    if re.search(r"class (.*)\(" + enum_type + r"\):", lines[i]) is not None:
+                        is_enum = True
+                        break
+                if is_enum:
                     doc += "\n\n" + PyMdDoc.get_enum_values(lines, i)
                 else:
                     doc += "\n\n***\n\n"
