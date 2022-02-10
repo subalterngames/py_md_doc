@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.2.7
+
+- Added optional parameter `overwrite_child_functions` to `PyMdDoc.get_docs_with_inheritance()`.
+
 ### 0.2.6
 
 - Moved this changelog to its own file.

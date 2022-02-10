@@ -96,7 +96,7 @@ Create a document from a Python file with the API for each class. Returns the do
 
 **`self.get_docs_with_inheritance(abstract_class_path, child_class_paths)`**
 
-**`self.get_docs_with_inheritance(abstract_class_path, child_class_paths, import_prefix=None)`**
+**`self.get_docs_with_inheritance(abstract_class_path, child_class_paths, import_prefix=None, overwrite_child_functions=True)`**
 
 Generate documentation with basic (one level deep) class inheritance.
 
@@ -106,6 +106,7 @@ Generate documentation with basic (one level deep) class inheritance.
 | abstract_class_path |  Union[str, Path] |  | The path to the abstract or base class. |
 | child_class_paths |  List[Union[str, Path] |  | A list of paths to the child classes. |
 | import_prefix |  str  | None | If not None, replace the import prefix with this import prefix. |
+| overwrite_child_functions |  bool  | True | If True, overwrite the child classes' function descriptions with the abstract class's descriptions. |
 
 _Returns:_  A dictionary. Key = The name of the class. Value = The markdown documentation as a string.
 

@@ -225,13 +225,15 @@ class PyMdDoc:
 
     def get_docs_with_inheritance(self, abstract_class_path: Union[str, Path],
                                   child_class_paths: List[Union[str, Path]],
-                                  import_prefix: str = None) -> Dict[str, str]:
+                                  import_prefix: str = None,
+                                  overwrite_child_functions: bool = True) -> Dict[str, str]:
         """
         Generate documentation with basic (one level deep) class inheritance.
 
         :param abstract_class_path: The path to the abstract or base class.
         :param child_class_paths: A list of paths to the child classes.
         :param import_prefix: If not None, replace the import prefix with this import prefix.
+        :param overwrite_child_functions: If True, overwrite the child classes' function descriptions with the abstract class's descriptions.
 
         :return: A dictionary. Key = The name of the class. Value = The markdown documentation as a string.
         """
@@ -332,6 +334,8 @@ class PyMdDoc:
                 if "## Functions" not in child_doc:
                     child_doc += "## Functions\n\n"
                 for f in abstract_functions:
+                    if f in child_functions and not overwrite_child_functions:
+                        continue
                     # Replace existing functions.
                     if f"#### {f}" in child_doc:
                         q = abstract_functions[f]
