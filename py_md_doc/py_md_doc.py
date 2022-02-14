@@ -1,3 +1,4 @@
+from os import walk
 from json import loads
 from pathlib import Path
 import re
@@ -218,7 +219,7 @@ class PyMdDoc:
                     doc += function
                 doc += "***\n\n"
         # Add a table of contents.
-        doc = doc.replace("[TOC]", PyMdDoc.get_toc(doc))
+        doc = doc.replace("[TOC]", PyMdDoc.get_doc_toc(doc))
         # Add an import prefix.
         doc = PyMdDoc._get_doc_with_import_prefix(doc=doc, import_prefix=import_prefix)
         return doc
@@ -627,7 +628,7 @@ class PyMdDoc:
         return enum_desc.strip()
 
     @staticmethod
-    def get_toc(doc: str) -> str:
+    def get_doc_toc(doc: str) -> str:
         """
         :param doc: The document.
 
@@ -654,6 +655,44 @@ class PyMdDoc:
                     desc = re.search(r"(^\*\*(.*?)\*\* |^)(.*?\.)($| [A-Z])", desc.group(4))
                     functions += f"| [{function}](#{function}) | {desc.group(3)} |\n"
             toc += functions
+        return toc.strip()
+
+    @staticmethod
+    def get_dir_toc(directory: Union[str, Path], import_prefix: str, link_prefix: str,
+                    class_name_overrides: Dict[str, str] = None) -> str:
+        """
+        :param directory: The root directory of the documentation.
+        :param import_prefix: The base import prefix (usually the name of the module).
+        :param link_prefix: The prefix for all links.
+        :param class_name_overrides: Class name overrides for cases where the file underscore_name doesn't match UnderscoreName. Key = The expected bad class name. Value = The corrected name.
+
+        :return: The table of contents of the documentation files in the directory.
+        """
+
+        if isinstance(directory, Path):
+            src_dir = str(directory.resolve())
+        else:
+            src_dir = directory
+        if class_name_overrides is None:
+            class_name_overrides = dict()
+        import_paths = []
+        toc = ""
+        for root_directory, directories, files in walk(src_dir):
+            for f in files:
+                if f.endswith(".md"):
+                    import_path = import_prefix[:]
+                    directory_infix = root_directory.replace(src_dir, "")[1:].replace("\\", "/")
+                    q = directory_infix.replace("/", ".")
+                    if len(q) > 0:
+                        import_path += "." + q
+                    if import_path not in import_paths:
+                        toc += f"\n**{import_path}**\n\n"
+                        import_paths.append(import_path)
+                    # Source: https://stackoverflow.com/a/6425628
+                    class_name = ''.join(x.capitalize() or '_' for x in f[:-3].split('_'))
+                    if class_name in class_name_overrides:
+                        class_name = class_name_overrides[class_name]
+                    toc += f"- [{class_name}]({link_prefix}/{directory_infix}/{f})\n".replace("//", "/")
         return toc.strip()
 
     @staticmethod

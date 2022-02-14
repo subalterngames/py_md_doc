@@ -1,5 +1,11 @@
 # Changelog
 
+### 0.3.0
+
+- Renamed `PyMdDoc.get_toc(doc)` to `PyMdDoc.get_doc_toc(doc)`
+- Added `PyMdDoc.get_dir_toc(directory, import_prefix, link_prefix, class_name_overrides=None)`
+- Updated API document (it was very out of date!)
+
 ### 0.2.7
 
 - Added optional parameter `overwrite_child_functions` to `PyMdDoc.get_docs_with_inheritance()`.

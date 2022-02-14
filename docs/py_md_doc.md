@@ -110,6 +110,37 @@ Generate documentation with basic (one level deep) class inheritance.
 
 _Returns:_  A dictionary. Key = The name of the class. Value = The markdown documentation as a string.
 
+#### get_doc_toc
+
+**`PyMdDoc.get_doc_toc(doc)`**
+
+_This is a static function._
+
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| doc |  str |  | The document. |
+
+_Returns:_  The table of contents of the document.
+
+#### get_dir_toc
+
+**`PyMdDoc.get_dir_toc(directory, import_prefix, link_prefix)`**
+
+**`PyMdDoc.get_dir_toc(directory, import_prefix, link_prefix, class_name_overrides=None)`**
+
+_This is a static function._
+
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| directory |  Union[str, Path] |  | The root directory of the documentation. |
+| import_prefix |  str |  | The base import prefix (usually the name of the module). |
+| link_prefix |  str |  | The prefix for all links. |
+| class_name_overrides |  Dict[str, str] | None | Class name overrides for cases where the file underscore_name doesn't match UnderscoreName. Key = The expected bad class name. Value = The corrected name. |
+
+_Returns:_  The table of contents of the documentation files in the directory.
+
 ***
 
 ### Helper Functions
@@ -188,19 +219,6 @@ Returns a list of enum values.
 | --- | --- | --- | --- |
 | lines |  List[str] |  | The lines in the document. |
 | start_index |  int |  | The line of the class defintion. |
-
-#### get_toc
-
-**`PyMdDoc.get_toc(doc)`**
-
-_This is a static function._
-
-
-| Parameter | Type | Default | Description |
-| --- | --- | --- | --- |
-| doc |  str |  | The document. |
-
-_Returns:_  The table of contents of the document.
 
 ***
 
