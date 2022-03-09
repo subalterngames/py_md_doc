@@ -183,7 +183,6 @@ class PyMdDoc:
                         doc += f"## Fields\n\n{field_documentation}\n\n***\n\n## Functions\n\n"
                     else:
                         doc += "## Functions\n\n"
-
                 # Append the function description.
                 function_documentation = PyMdDoc.get_function_documentation(lines, i, class_name) + "\n\n"
                 function_name = re.search("#### (.*)", function_documentation).group(1).replace("\\_", "_")
@@ -197,6 +196,9 @@ class PyMdDoc:
                             break
                     if function_category == "":
                         print(f"Warning: Uncategorized function {class_name}.{function_name}()")
+                functions_header = "## Functions\n\n"
+                if functions_header not in doc:
+                    doc += functions_header
                 if function_category == "":
                     doc += function_documentation
                 # Add this later.
@@ -224,7 +226,7 @@ class PyMdDoc:
         doc = PyMdDoc._get_doc_with_import_prefix(doc=doc, import_prefix=import_prefix)
         section_break_fields = "***\n\n## Fields"
         section_break_functions = "***\n\n## Functions"
-        if "## Class Variables" in doc and "AssetBundleCreatorBase" in doc:
+        if "## Class Variables" in doc:
             if "## Fields" in doc and section_break_fields not in doc:
                 doc = doc.replace("## Fields", section_break_fields)
             elif "## Functions" in doc and section_break_functions not in doc:

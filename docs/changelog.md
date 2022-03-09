@@ -1,5 +1,19 @@
 # Changelog
 
+### 0.4.3
+
+- Fixed: Occasional missing `## Function` header
+- Fixed: Occasional missing `## Class Variables` header
+- Fixed: Occasional incorrect constructor info
+
+### 0.4.2
+
+- Minor fixes
+
+### 0.4.1
+
+- Minor fixes
+
 ### 0.4.0
 
 - Added `ClassInheritance` class which has much better support for class inheritance than the previous solution

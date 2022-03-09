@@ -177,6 +177,7 @@ class ClassInheritance:
                 if parent_init_search is not None:
                     # Replace the class name.
                     init = parent_init_search.group(1)
+                    break
         if init is None:
             init = f'\\_\\_init\\_\\_\n\n**`{child_class_name}()`**'
         else:
@@ -219,7 +220,8 @@ class ClassInheritance:
             if "## Fields" in child_text and section_break_fields not in child_text:
                 child_text = child_text.replace("## Fields", section_break_fields)
             elif "## Functions" in child_text and section_break_functions not in child_text:
-                child_text = child_text.replace("## Functions", section_break_fields)
+                child_text = child_text.replace("## Functions", section_break_functions)
+        child_text = child_text.replace(f"{child_class_name}(ABC)", child_class_name)
         return child_text
 
     @staticmethod
