@@ -1,5 +1,10 @@
 # Changelog
 
+### 0.4.0
+
+- Added `ClassInheritance` class which has much better support for class inheritance than the previous solution
+- Removed `PyMdDoc.get_docs_with_inheritance()` (the aforementioned previous solution)
+
 ### 0.3.0
 
 - Renamed `PyMdDoc.get_toc(doc)` to `PyMdDoc.get_doc_toc(doc)`

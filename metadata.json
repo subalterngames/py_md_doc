@@ -7,7 +7,7 @@
     },
     "Documentation Generation": {
       "description": "Use these functions to generate your documentation.",
-      "functions": ["get_doc", "get_docs", "get_docs_with_inheritance", "get_doc_toc", "get_dir_toc"]
+      "functions": ["get_doc", "get_docs", "get_doc_toc", "get_dir_toc"]
     },
     "Helper Functions": {
       "description": "These functions are used in `get_docs()`. You generally won't need to call these yourself.",

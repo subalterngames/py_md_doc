@@ -12,13 +12,14 @@ pip3 install py-md-doc
 
 ## Usage
 
-To generate the documentation for this module:
+
+### 1. Documentation for this module
 
 1. Clone this repo.
 2. `cd path/to/py_md_doc` (Replace `path_to`) with the actual path to this repo.)
 3. `python3 doc_gen.py`
 
-To generate documentation for your own module:
+### 2. Documentation for your own module
 
 ```python
 from py_md_doc import PyMdDoc
@@ -29,7 +30,12 @@ md = PyMdDoc(input_directory=Path("my_module/my_module"), files=["my_script.py"]
 md.get_docs(output_directory=Path("my_module/docs"))
 ```
 
-**For the full API, [read this](https://github.com/subalterngames/py_md_doc/blob/main/docs/py_md_doc.md).**
+**For the API, [read this](https://github.com/subalterngames/py_md_doc/blob/main/docs/py_md_doc.md).**
+
+### 3. Documentation with class inheritance
+
+1. Generate documentation for each child script (see above).
+2. Use [`ClassInheritance`](https://github.com/subalterngames/py_md_doc/blob/main/docs/class_inheritance.md) to append inherited fields, functions, etc. from the generated documents.
 
 ## Code comments format
 

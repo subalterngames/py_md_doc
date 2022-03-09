@@ -224,160 +224,6 @@ class PyMdDoc:
         doc = PyMdDoc._get_doc_with_import_prefix(doc=doc, import_prefix=import_prefix)
         return doc
 
-    def get_docs_with_inheritance(self, abstract_class_path: Union[str, Path],
-                                  child_class_paths: List[Union[str, Path]],
-                                  import_prefix: str = None,
-                                  overwrite_child_functions: bool = True) -> Dict[str, str]:
-        """
-        Generate documentation with basic (one level deep) class inheritance.
-
-        :param abstract_class_path: The path to the abstract or base class.
-        :param child_class_paths: A list of paths to the child classes.
-        :param import_prefix: If not None, replace the import prefix with this import prefix.
-        :param overwrite_child_functions: If True, overwrite the child classes' function descriptions with the abstract class's descriptions.
-
-        :return: A dictionary. Key = The name of the class. Value = The markdown documentation as a string.
-        """
-
-        docs: Dict[str, str] = dict()
-        if isinstance(abstract_class_path, str):
-            abstract_class_path: Path = Path(abstract_class_path)
-
-        # Get the raw text from the abstract class Python file.
-        abstract_py = abstract_class_path.read_text(encoding="utf-8")
-        # Get all of the abstract functions. We'll mark them on the doc at the very end of this function.
-        abstract_defs: List[str] = re.findall(r"@abstractmethod\n\s+def (.*?)\(", abstract_py, flags=re.MULTILINE)
-
-        # Generate a doc for the abstract class.
-        abstract_doc = self.get_doc(abstract_class_path)
-
-        # Get class variables from the abstract class.
-        class_variables_search = re.search(r"## Class Variables\n((.|\n)*?)\*", abstract_doc)
-        if class_variables_search is not None:
-            # Get a list of class variables by converting the table into a list of row strings.
-            abstract_class_variables = re.findall(r"(\| `(.*)` \| (.*) \| (.*) \|$)",
-                                                  class_variables_search.group(0),
-                                                  flags=re.MULTILINE)
-            abstract_class_variables: List[str] = [a[0] for a in abstract_class_variables]
-        else:
-            abstract_class_variables: List[str] = list()
-
-        # Get fields from the abstract class.
-        fields_search = re.search(r"## Fields\n((.|\n)*?)(#|\Z)", abstract_doc)
-        if fields_search is not None:
-            # Get a list of fields by converting the bullet-point list into a list of strings.
-            abstract_fields = re.findall(r"(- `(.*?)`(.*)$)", fields_search.group(0), flags=re.MULTILINE)
-            abstract_fields: List[str] = [a[0] for a in abstract_fields]
-        else:
-            abstract_fields: List[str] = list()
-
-        # Get functions from the abstract class.
-        functions_search = re.search(r"## Functions\n((.|\n)*?)\Z", abstract_doc, flags=re.MULTILINE)
-        if functions_search is not None:
-            function_names = re.findall(r"#### (.*)", functions_search.group(0), flags=re.MULTILINE)
-            # Ignore the constructor.
-            function_names = [f for f in function_names if f != '\\_\\_init\\_\\_']
-            # Create a dictionary where the key is the function name and the value is the docstring.
-            abstract_functions: Dict[str, str] = {f: re.search(f"(#### {f}" + "((.|\n)*?))(#|\\Z)",
-                                                               functions_search.group(0),
-                                                               flags=re.MULTILINE).group(0)
-                                                  for f in function_names}
-        else:
-            abstract_functions: Dict[str, str] = dict()
-
-        # Generate documentation for each child class.
-        for child_class_path in child_class_paths:
-            if isinstance(child_class_path, str):
-                child_class_path = Path(child_class_path)
-            # Get the raw text from the child class Python file.
-            child_py = child_class_path.read_text(encoding="utf-8")
-            # Get all of the final functions. We'll mark them on the doc at the very end of this function.
-            final_defs: List[str] = re.findall(r"@final\n\s+def (.*?)\(", child_py, flags=re.MULTILINE)
-            # Generate the base document.
-            child_doc = self.get_doc(child_class_path)
-            child_functions = re.findall("#### (.*)\n", child_doc, flags=re.MULTILINE)
-
-            # Append class variables.
-            if len(abstract_class_variables) > 0:
-                class_variables_search = re.search(r"## Class Variables\n((.|\n)*?)\*", child_doc)
-                # There aren't any new class variables. Create a new section.
-                if class_variables_search is None:
-                    child_class_variables = "## Class Variables\n\n| Variable | Type | Description |\n" \
-                                            "| --- | --- | --- |\n"
-                    for acv in abstract_class_variables:
-                        child_class_variables += acv + "\n"
-                    child_class_variables = child_class_variables.strip()
-                    # Add the new section.
-                    child_doc = child_doc.replace("***", f"***\n\n{child_class_variables}\n\n***", 1)
-                else:
-                    rows = "\n".join(abstract_class_variables)
-                    child_doc = re.sub(r"(## Class Variables\n\n\| Variable \| Type \| Description \|\n"
-                                       r"\| --- \| --- \| --- \|)", r"\1" + "\n" + rows, child_doc,
-                                       flags=re.MULTILINE)
-            # Append fields.
-            if len(abstract_fields) > 0:
-                fields_search = re.search(r"## Fields\n((.|\n)*?)## Functions", child_doc)
-                # Create a new fields section.
-                if fields_search is None:
-                    child_fields = "## Fields\n\n" + "\n\n".join(abstract_fields)
-                    if "## Class Variables" in child_doc:
-                        child_doc = re.sub(r"(\|\n\n\*\*\*\n\n)", r"\1" + child_fields + "\n\n***\n\n",
-                                           child_doc, flags=re.S)
-                    else:
-                        child_doc = re.sub(r"(\*\*\*\n\n)", r"\1" + child_fields + "\n\n***\n\n",
-                                           child_doc, flags=re.S)
-                # Append existing fields.
-                else:
-                    child_doc = child_doc.replace("## Fields", "## Fields\n\n" + "\n\n".join(abstract_fields))
-            # Append functions.
-            if len(abstract_functions) > 0:
-                # Add a functions section.
-                if "## Functions" not in child_doc:
-                    child_doc += "## Functions\n\n"
-                for f in abstract_functions:
-                    if f in child_functions and not overwrite_child_functions:
-                        continue
-                    # Replace existing functions.
-                    if f"#### {f}" in child_doc:
-                        q = abstract_functions[f]
-                        if q.endswith("\n\n#"):
-                            q = q[:-3]
-                        if not q.endswith("\n\n"):
-                            q += "\n\n"
-                        child_doc = re.sub(f"(#### {f}" + r"((.|\n)*?))(#|\Z)", q, child_doc,
-                                           flags=re.MULTILINE)
-                    else:
-                        q = abstract_functions[f]
-                        if q.endswith("\n\n#"):
-                            q = q[:-3]
-                        if not child_doc.endswith("\n"):
-                            child_doc += "\n\n"
-                        child_doc += q + "\n\n"
-                    child_doc = child_doc.replace(f"### {f}", f"#### {f}")
-                    child_doc = child_doc.replace(f"##### {f}", f"#### {f}")
-
-            # Append final markers.
-            for final_def in final_defs:
-                child_doc = re.sub(f"(#### {final_def})(.*)", r"\1\n\n_(Final)_\2", child_doc,
-                                   flags=re.MULTILINE)
-
-            # Fix headers.
-            for child_function in child_functions:
-                child_doc = re.sub(r"^### " + child_function, f"#### {child_function}", child_doc, flags=re.MULTILINE)
-            # Store this document.
-            docs[child_class_path.name[:-3]] = child_doc
-
-        # Mark abstract functions.
-        for abstract_def in abstract_defs:
-            abstract_doc = re.sub(f"(#### {abstract_def})(.*)", r"\1\n\n_(Abstract)_\2", abstract_doc,
-                                  flags=re.MULTILINE)
-        # Store the abstract document.
-        docs[abstract_class_path.name[:-3]] = abstract_doc
-        if import_prefix is not None:
-            docs = {k: re.sub(r"(`from (.*?)\.)(.*)$", "`" + import_prefix + ".\\3", v, flags=re.MULTILINE)
-                    for (k, v) in docs.items()}
-        return docs
-
     @staticmethod
     def get_class_variables(lines: List[str], start_index: int) -> str:
         """
@@ -460,7 +306,7 @@ class PyMdDoc:
 
         :param file_txt: All of the text of the file.
         """
-        
+
         class_desc = re.search(r'class ([aA-Zz](.*)):\n[\s]+"""\n([\s]+((.*)+[\n]+)+?[\s]+)"""', file_txt,
                                flags=re.MULTILINE).group(3)
         class_desc = re.sub(r"(\A *\d+\. *|^ {0,4})", r"", class_desc, flags=re.MULTILINE)
@@ -513,6 +359,8 @@ class PyMdDoc:
         func_desc = ""
         for i in range(start_index + 1, len(lines)):
             line = lines[i].strip()
+            if line.strip().startswith("def") and not began_desc:
+                break
             if '"""' in line:
                 # Found the terminating triple quote.
                 if began_desc:
