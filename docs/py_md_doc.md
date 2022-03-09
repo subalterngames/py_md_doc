@@ -19,9 +19,9 @@ if __name__ == "__main__":
 
 ## Class Variables
 
-| Variable | Type | Description |
-| --- | --- | --- |
-| `CLASS_VAR` | int | This is a test class variable. It doesn't do anything in this code other than test that the documentation generates correctly. |
+| Variable | Type | Description | Value |
+| --- | --- | --- | --- |
+| `CLASS_VAR` | int | This is a test class variable. It doesn't do anything in this code other than test that the documentation generates correctly. | `0` |
 
 ***
 

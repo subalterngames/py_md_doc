@@ -124,8 +124,9 @@ class ClassInheritance:
         child_class_variables_search = re.search(re_class_variables, child_text, flags=re.MULTILINE)
         if child_class_variables_search is not None:
             class_variables.extend(child_class_variables_search.group(3).strip().split("\n"))
+        class_variables = list(set(class_variables))
         if len(class_variables) > 0:
-            class_variables_text = "## Class Variables\n\n| Variable | Type | Description |\n| --- | --- | --- |\n" + "\n".join(class_variables)
+            class_variables_text = "## Class Variables\n\n| Variable | Type | Description | Value |\n| --- | --- | --- | --- |\n" + "\n".join(class_variables)
             if "## Class Variables" in child_text:
                 child_text = re.sub(re_class_variables, class_variables_text, child_text, flags=re.MULTILINE)
             else:
@@ -135,7 +136,7 @@ class ClassInheritance:
                     child_text += f"\n\n***\n\n{class_variables_text}"
                 # Add a section between the header and the next section.
                 else:
-                    child_text = child_text.replace(split[0], split[0].strip() + f"\n\n{class_variables_text[:-5]}\n\n").strip()
+                    child_text = child_text.replace(split[0], split[0].strip() + f"\n\n{class_variables_text.strip()}\n\n").strip()
         # Get fields.
         parent_fields = []
         re_fields = r'^## Fields((.|\n)*?)(\*\*\*|\Z)'
@@ -175,9 +176,7 @@ class ClassInheritance:
                 parent_init_search = re.search(re_init, parent_text, flags=re.MULTILINE)
                 if parent_init_search is not None:
                     # Replace the class name.
-                    parent_init = parent_init_search.group(1)
-                    parent_init = parent_init.replace(parent_class_name, child_class_name)
-                    init = parent_init
+                    init = parent_init_search.group(1)
         if init is None:
             init = f'\\_\\_init\\_\\_\n\n**`{child_class_name}()`**'
         else:
@@ -214,6 +213,13 @@ class ClassInheritance:
         for parent_class_name in parent_class_names:
             child_text = child_text.replace(parent_class_name + "(", child_class_name + "(")
             child_text = child_text.replace(f"{child_class_name}({parent_class_name})", child_class_name)
+        section_break_fields = "***\n\n## Fields"
+        section_break_functions = "***\n\n## Functions"
+        if "## Class Variables" in child_text:
+            if "## Fields" in child_text and section_break_fields not in child_text:
+                child_text = child_text.replace("## Fields", section_break_fields)
+            elif "## Functions" in child_text and section_break_functions not in child_text:
+                child_text = child_text.replace("## Functions", section_break_fields)
         return child_text
 
     @staticmethod

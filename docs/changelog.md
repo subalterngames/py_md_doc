@@ -5,6 +5,7 @@
 - Added `ClassInheritance` class which has much better support for class inheritance than the previous solution
 - Removed `PyMdDoc.get_docs_with_inheritance()` (the aforementioned previous solution)
 - Edited the tag for static functions from `_This is a static function_` to `_(Static)_`
+- Added a `Value` column to the class variable tables
 
 ### 0.3.0
 

@@ -222,6 +222,13 @@ class PyMdDoc:
         doc = doc.replace("[TOC]", PyMdDoc.get_doc_toc(doc))
         # Add an import prefix.
         doc = PyMdDoc._get_doc_with_import_prefix(doc=doc, import_prefix=import_prefix)
+        section_break_fields = "***\n\n## Fields"
+        section_break_functions = "***\n\n## Functions"
+        if "## Class Variables" in doc and "AssetBundleCreatorBase" in doc:
+            if "## Fields" in doc and section_break_fields not in doc:
+                doc = doc.replace("## Fields", section_break_fields)
+            elif "## Functions" in doc and section_break_functions not in doc:
+                doc = doc.replace("## Functions", section_break_fields)
         return doc
 
     @staticmethod
@@ -240,20 +247,21 @@ class PyMdDoc:
                 break
             txt += lines[i] + "\n"
         # Parse all lines that have class variable documentation.
-        class_var_lines = re.findall(r'""":class_var(((.*)+[\n]+)+?[\s]+)"""\n[\s]+(.*)=', txt, flags=re.MULTILINE)
+        class_var_lines = re.findall(r'""":class_var(((.*)+[\n]+)+?[\s]+)"""\n[\s]+(.*?)=(.*)', txt, flags=re.MULTILINE)
         if len(class_var_lines) <= 0:
             return ""
         # Create a table.
-        class_vars = "| Variable | Type | Description |\n| --- | --- | --- |\n"
+        class_vars = "| Variable | Type | Description | Value |\n| --- | --- | --- | --- |\n"
         for lines in class_var_lines:
             desc = lines[0].strip()
-            var_split = lines[-1].split(":")
+            var_split = lines[-2].split(":")
             var = var_split[0]
             if len(var_split) > 1:
                 var_type = var_split[1].split("=")[0].strip()
             else:
                 var_type = ""
-            class_vars += f"| `{var}` | {var_type} | {desc} |\n"
+            value = lines[-1].strip()
+            class_vars += f"| `{var}` | {var_type} | {desc} | `{value}` |\n"
         return class_vars.strip()
 
     @staticmethod
