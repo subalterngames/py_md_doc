@@ -419,7 +419,7 @@ class PyMdDoc:
         else:
             function += f"**`{short_call}`**\n\n**`{long_call}`**\n\n"
         if is_static:
-            function += "_This is a static function._\n\n"
+            function += "_(Static)_\n\n"
         function += func_desc
 
         if function[-1] == "\n":

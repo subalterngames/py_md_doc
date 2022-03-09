@@ -96,7 +96,7 @@ Create a document from a Python file with the API for each class. Returns the do
 
 **`PyMdDoc.get_doc_toc(doc)`**
 
-_This is a static function._
+_(Static)_
 
 
 | Parameter | Type | Default | Description |
@@ -111,7 +111,7 @@ _Returns:_  The table of contents of the document.
 
 **`PyMdDoc.get_dir_toc(directory, import_prefix, link_prefix, class_name_overrides=None)`**
 
-_This is a static function._
+_(Static)_
 
 
 | Parameter | Type | Default | Description |
@@ -133,7 +133,7 @@ These functions are used in `get_docs()`. You generally won't need to call these
 
 **`PyMdDoc.get_class_variables(lines, start_index)`**
 
-_This is a static function._
+_(Static)_
 
 
 | Parameter | Type | Default | Description |
@@ -147,7 +147,7 @@ _Returns:_  A table of class variables as a string.
 
 **`PyMdDoc.get_fields(lines, start_index)`**
 
-_This is a static function._
+_(Static)_
 
 Get the field descriptions for this class.
 
@@ -163,7 +163,7 @@ _Returns:_  A string of field documentation.
 
 **`PyMdDoc.get_class_description(file_txt)`**
 
-_This is a static function._
+_(Static)_
 
 Parses a file starting at a line defined by start_index to get the class name and description.
 This assumes that the class has a triple quote description.
@@ -176,7 +176,7 @@ This assumes that the class has a triple quote description.
 
 **`PyMdDoc.get_function_documentation(lines, start_index, class_name)`**
 
-_This is a static function._
+_(Static)_
 
 Create documentation for a function and its parameters.
 
@@ -193,7 +193,7 @@ _Returns:_  The function documentation string.
 
 **`PyMdDoc.get_enum_values(lines, start_index)`**
 
-_This is a static function._
+_(Static)_
 
 Returns a list of enum values.
 

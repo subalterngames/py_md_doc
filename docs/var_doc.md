@@ -21,7 +21,7 @@ VAR: int = 0
 
 **`VarDoc.get(src, dst)`**
 
-_This is a static function._
+_(Static)_
 
 
 | Parameter | Type | Default | Description |
