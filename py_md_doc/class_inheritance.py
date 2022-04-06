@@ -124,7 +124,7 @@ class ClassInheritance:
         child_class_variables_search = re.search(re_class_variables, child_text, flags=re.MULTILINE)
         if child_class_variables_search is not None:
             class_variables.extend(child_class_variables_search.group(3).strip().split("\n"))
-        class_variables = list(set(class_variables))
+        class_variables = list(sorted(set(class_variables)))
         if len(class_variables) > 0:
             class_variables_text = "## Class Variables\n\n| Variable | Type | Description | Value |\n| --- | --- | --- | --- |\n" + "\n".join(class_variables)
             if "## Class Variables" in child_text:

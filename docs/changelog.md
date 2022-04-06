@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.4.4
+
+- Fixed: The order of inherited class variables is non-deterministic
+
 ### 0.4.3
 
 - Fixed: Occasional missing `## Function` header
