@@ -165,7 +165,7 @@ class ClassInheritance:
                 child_text = child_text.replace(child_fields_text, "\n\n" + "\n\n".join(fields) + "\n\n").strip()
         # Get the __init__ function.
         init = None
-        re_init = r'## Functions\n\n#### (\\_\\_init\\_\\_((.|\n)*))(^#|\Z)'
+        re_init = r'## Functions\n\n#### (\\_\\_init\\_\\_((.|\n)*?))(^#|\Z)'
         child_init_search = re.search(re_init, child_text, flags=re.MULTILINE)
         parent_class_names = []
         for parent_text in parent_texts:

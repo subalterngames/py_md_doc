@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.4.5
+
+- Fixed: Bad regex could cause class inheritance documentation to include too much text
+
 ### 0.4.4
 
 - Fixed: The order of inherited class variables is non-deterministic
