@@ -262,7 +262,7 @@ class PyMdDoc:
                 var_type = var_split[1].split("=")[0].strip()
             else:
                 var_type = ""
-            value = lines[-1].strip()
+            value = lines[-1].strip().replace('\n', '\\n')
             class_vars += f"| `{var}` | {var_type} | {desc} | `{value}` |\n"
         return class_vars.strip()
 

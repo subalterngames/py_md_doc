@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.4.6
+
+- Fixed: Default class variable values that include `"\n"` are parsed as line breaks
+
 ### 0.4.5
 
 - Fixed: Bad regex could cause class inheritance documentation to include too much text
