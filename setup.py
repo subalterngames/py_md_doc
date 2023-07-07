@@ -3,8 +3,7 @@ from pathlib import Path
 
 setup(
     name="py_md_doc",
-    packages={"py_md_doc"},
-    version="0.4.6",
+    version="0.5.0",
     license="MIT",
     description="Generate markdown documentation for your Python scripts."
                 "Like Sphinx, but simpler and directly compatible with GitHub.",
@@ -24,5 +23,9 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8'
+        'Programming Language :: Python :: 3.9'
+        'Programming Language :: Python :: 3.10'
+        'Programming Language :: Python :: 3.11'
+        'Programming Language :: Python :: 3.12'
     ],
 )

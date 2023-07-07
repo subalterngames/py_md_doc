@@ -3,16 +3,16 @@ import importlib
 from pathlib import Path
 from typing import List, Union, Dict, Type
 from py_md_doc.py_md_doc import PyMdDoc
+from py_md_doc.doc_base import DocBase
 
 
-class ClassInheritance:
+class ClassInheritance(DocBase):
     """
     Handle documentation with class inheritance.
     """
 
-    @staticmethod
-    def get_from_directory(input_directory: Union[str, Path], output_directory: Union[str, Path], import_path: str,
-                           overrides: Dict[str, str] = None, import_prefix: str = None,
+    def get_from_directory(self, input_directory: Union[str, Path], output_directory: Union[str, Path],
+                           import_path: str, overrides: Dict[str, str] = None, import_prefix: str = None,
                            excludes: List[str] = None, includes: List[str] = None) -> None:
         """
         Generate documentation with class inheritance from a source directory.
@@ -25,7 +25,7 @@ class ClassInheritance:
         :param output_directory: The output destination directory of .md files.
         :param import_path: The expected Python import path, for example `module.sub_module`.
         :param overrides: Override any unexpected classes or filenames. Key = What would be programatically expected such as `MyClass`. Value = What actually exists such as `MYCLASS`.
-        :param import_prefix: The import prefrix, for example `from module.sub_module`.
+        :param import_prefix: The import prefix, for example `from module.sub_module`.
         :param excludes: Exclude any .py in this list.
         :param includes: If not None, only include these .py files.
         """
@@ -56,14 +56,14 @@ class ClassInheritance:
                 class_name = ''.join(x.capitalize() or '_' for x in f.name[:-3].split('_'))
                 if overrides is not None and class_name in overrides:
                     class_name = overrides[class_name]
-                doc = ClassInheritance.get_from_type(
-                    t=getattr(importlib.import_module(f"{import_path}.{f.name[:-3]}"), class_name),
-                    directory=dst_dir,
-                    overrides=overrides)
+                doc = self.get_from_type(t=getattr(importlib.import_module(f"{import_path}.{f.name[:-3]}"), class_name),
+                                         directory=dst_dir,
+                                         overrides=overrides)
+                if class_name in self.metadata:
+                    doc = self.sort_by_metadata(class_name=class_name, doc=doc)
                 dst_dir.joinpath(f.name[:-3] + ".md").write_text(doc)
 
-    @staticmethod
-    def get_from_type(t: Type, directory: Union[str, Path], overrides: Dict[str, str] = None) -> str:
+    def get_from_type(self, t: Type, directory: Union[str, Path], overrides: Dict[str, str] = None) -> str:
         """
         Generate documentation with class inheritance from a source type and documentation directory.
 
@@ -99,10 +99,9 @@ class ClassInheritance:
             if not parent_path.exists():
                 break
             parent_texts.append(parent_path.read_text(encoding="utf-8"))
-        return ClassInheritance.get_from_text(child_text=child_text, parent_texts=parent_texts)
+        return self.get_from_text(child_text=child_text, parent_texts=parent_texts)
 
-    @staticmethod
-    def get_from_text(child_text: str, parent_texts: List[str]) -> str:
+    def get_from_text(self, child_text: str, parent_texts: List[str]) -> str:
         """
         Generate documentation with inheritance from parent documentation.
 
@@ -222,6 +221,8 @@ class ClassInheritance:
             elif "## Functions" in child_text and section_break_functions not in child_text:
                 child_text = child_text.replace("## Functions", section_break_functions)
         child_text = child_text.replace(f"{child_class_name}(ABC)", child_class_name)
+        if child_class_name in self.metadata:
+            doc = self.sort_by_metadata(class_name=child_class_name, doc=child_text)
         return child_text
 
     @staticmethod

@@ -1,5 +1,12 @@
 # Changelog
 
+### 0.5.0
+
+- Added `BaseDoc` abstract class. `ClassInteritance` and `PyMdDoc` are now subclasses of `BaseDoc`.
+- All `ClassInheritance` classes are no longer static.
+- `ClassInheritance` can be constructed with an optional `metadata_path` parameter, which does the same thing as in `PyMdDoc`.
+- Extended supported Python versions up to 3.12
+
 ### 0.4.6
 
 - Fixed: Default class variable values that include `"\n"` are parsed as line breaks

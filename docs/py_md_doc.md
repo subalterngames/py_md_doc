@@ -27,22 +27,13 @@ if __name__ == "__main__":
 
 ## Fields
 
-- `files` A list of paths to each Python script file as `Path` objects.
-
-- `metadata` The metadata dictionary loaded from the metadata file. If there is no metadata file, this is empty.
+- `files` The root directory of the source .py files.
 
 - `root_import_name` The expected name of the root import name, derived the input directory.
 
-```python
-from py_md_doc import PyMdDoc
-from pathlib import Path
-
-# Generates the documentation for the py_md_doc module.
-md = PyMdDoc(input_directory=Path("my_module"), files=["my_file.py"])
-print(md.root_import_name) # my_module
-```
-
 - `special_imports` A list of special import statements from `__init__.py`
+
+- `metadata` The metadata dictionary loaded from the metadata file. If there is no metadata file, this is empty.
 
 ***
 
@@ -66,19 +57,6 @@ print(md.root_import_name) # my_module
 
 Use these functions to generate your documentation.
 
-#### get_docs
-
-**`self.get_docs(output_directory)`**
-
-**`self.get_docs(output_directory, import_prefix=None)`**
-
-Generate documents for all of the Python files and write them to disk.
-
-| Parameter | Type | Default | Description |
-| --- | --- | --- | --- |
-| output_directory |  Union[Path, str] |  | The path to the output directory. Can be of type `Path` or `str`. |
-| import_prefix |  str  | None | If not None, replace the import prefix with this import prefix. |
-
 #### get_doc
 
 **`self.get_doc(file)`**
@@ -90,6 +68,19 @@ Create a document from a Python file with the API for each class. Returns the do
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
 | file |  Path |  | The path to the Python script. |
+| import_prefix |  str  | None | If not None, replace the import prefix with this import prefix. |
+
+#### get_docs
+
+**`self.get_docs(output_directory)`**
+
+**`self.get_docs(output_directory, import_prefix=None)`**
+
+Generate documents for all the Python files and write them to disk.
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| output_directory |  Union[Path, str] |  | The path to the output directory. Can be of type `Path` or `str`. |
 | import_prefix |  str  | None | If not None, replace the import prefix with this import prefix. |
 
 #### get_doc_toc
@@ -129,6 +120,19 @@ _Returns:_  The table of contents of the documentation files in the directory.
 
 These functions are used in `get_docs()`. You generally won't need to call these yourself.
 
+#### get_class_description
+
+**`PyMdDoc.get_class_description(file_txt)`**
+
+_(Static)_
+
+Parses a file starting at a line defined by start_index to get the class name and description.
+This assumes that the class has a triple quote description.
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| file_txt |  str |  | All of the text of the file. |
+
 #### get_class_variables
 
 **`PyMdDoc.get_class_variables(lines, start_index)`**
@@ -142,35 +146,6 @@ _(Static)_
 | start_index |  int |  | Start looking for fields at this line. |
 
 _Returns:_  A table of class variables as a string.
-
-#### get_fields
-
-**`PyMdDoc.get_fields(lines, start_index)`**
-
-_(Static)_
-
-Get the field descriptions for this class.
-
-
-| Parameter | Type | Default | Description |
-| --- | --- | --- | --- |
-| lines |  List[str] |  | All of the lines of the file. |
-| start_index |  int |  | Start looking for fields at this line. |
-
-_Returns:_  A string of field documentation.
-
-#### get_class_description
-
-**`PyMdDoc.get_class_description(file_txt)`**
-
-_(Static)_
-
-Parses a file starting at a line defined by start_index to get the class name and description.
-This assumes that the class has a triple quote description.
-
-| Parameter | Type | Default | Description |
-| --- | --- | --- | --- |
-| file_txt |  str |  | All of the text of the file. |
 
 #### get_function_documentation
 
@@ -201,6 +176,22 @@ Returns a list of enum values.
 | --- | --- | --- | --- |
 | lines |  List[str] |  | The lines in the document. |
 | start_index |  int |  | The line of the class defintion. |
+
+#### get_fields
+
+**`PyMdDoc.get_fields(lines, start_index)`**
+
+_(Static)_
+
+Get the field descriptions for this class.
+
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| lines |  List[str] |  | All of the lines of the file. |
+| start_index |  int |  | Start looking for fields at this line. |
+
+_Returns:_  A string of field documentation.
 
 ***
 

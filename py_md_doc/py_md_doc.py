@@ -1,12 +1,12 @@
 from os import walk
-from json import loads
 from pathlib import Path
 import re
 from typing import List, Dict, Union
 from py_md_doc.parameter import Parameter
+from py_md_doc.doc_base import DocBase
 
 
-class PyMdDoc:
+class PyMdDoc(DocBase):
     """
     Generate Markdown documentation for your Python scripts.
 
@@ -36,10 +36,14 @@ class PyMdDoc:
         :param metadata_path: The path to the metadata file. Can be None. See the README for how to format this file.
         """
 
+        super().__init__(metadata_path=metadata_path)
         if isinstance(input_directory, Path):
-            pass
+            """:field
+            The root directory of the source .py files.
+            """
+            source_directory: Path = input_directory
         elif isinstance(input_directory, str):
-            input_directory = Path(input_directory)
+            source_directory = Path(input_directory)
         else:
             raise Exception("Invalid type: input_directory must be of type str or Path.")
 
@@ -48,24 +52,9 @@ class PyMdDoc:
         """
         self.files: List[Path] = list()
         for f in files:
-            filepath = input_directory.joinpath(f)
+            filepath = source_directory.joinpath(f)
             assert filepath.exists(), f"File not found: {filepath}"
             self.files.append(filepath)
-
-        # Load the metadata.
-        if metadata_path is None:
-            """:field
-            The metadata dictionary loaded from the metadata file. If there is no metadata file, this is empty.
-            """
-            self.metadata = dict()
-        if metadata_path is not None:
-            if isinstance(metadata_path, Path):
-                pass
-            elif isinstance(metadata_path, str):
-                metadata_path = Path(metadata_path)
-            else:
-                raise Exception("Invalid type: categories_path must be of type str or Path.")
-            self.metadata = loads(metadata_path.read_text(encoding="utf-8"))
         """:field
         The expected name of the root import name, derived the input directory.
         
@@ -78,14 +67,14 @@ class PyMdDoc:
         print(md.root_import_name) # my_module
         ```
         """
-        self.root_import_name = input_directory.name
+        self.root_import_name = source_directory.name
 
         """:field
         A list of special import statements from `__init__.py`
         """
         self.special_imports: List[str] = list()
 
-        init_path = input_directory.joinpath("__init__.py")
+        init_path = source_directory.joinpath("__init__.py")
         if init_path.exists():
             init_txt = init_path.read_text(encoding="utf-8")
             for line in init_txt.split("\n"):
@@ -95,7 +84,7 @@ class PyMdDoc:
 
     def get_docs(self, output_directory: Union[Path, str], import_prefix: str = None) -> None:
         """
-        Generate documents for all of the Python files and write them to disk.
+        Generate documents for all the Python files and write them to disk.
 
         :param output_directory: The path to the output directory. Can be of type `Path` or `str`.
         :param import_prefix: If not None, replace the import prefix with this import prefix.
@@ -132,7 +121,6 @@ class PyMdDoc:
         lines: List[str] = file_txt.split("\n")
 
         class_name = ""
-        functions_by_categories = {"": []}
         looking_for_class: bool = True
         for i in range(len(lines)):
             # Create a class description.
@@ -145,8 +133,6 @@ class PyMdDoc:
                 # Add the name of the class
                 class_name = re.search("class (.*):", lines[i]).group(1)
                 class_header = re.sub(r"(.*)\((.*)\)", r"\1", class_name)
-
-                functions_by_categories.clear()
 
                 doc += f"# {class_header}\n\n"
 
@@ -185,41 +171,12 @@ class PyMdDoc:
                         doc += "## Functions\n\n"
                 # Append the function description.
                 function_documentation = PyMdDoc.get_function_documentation(lines, i, class_name) + "\n\n"
-                function_name = re.search("#### (.*)", function_documentation).group(1).replace("\\_", "_")
-
-                # Categorize the functions.
-                function_category = ""
-                if class_name in self.metadata:
-                    for category in self.metadata[class_name]:
-                        if function_name in self.metadata[class_name][category]["functions"]:
-                            function_category = category
-                            break
-                    if function_category == "":
-                        print(f"Warning: Uncategorized function {class_name}.{function_name}()")
                 functions_header = "## Functions\n\n"
                 if functions_header not in doc:
                     doc += functions_header
-                if function_category == "":
-                    doc += function_documentation
-                # Add this later.
-                else:
-                    if function_category not in functions_by_categories:
-                        functions_by_categories[function_category] = list()
-                    functions_by_categories[function_category].append(function_documentation)
+                doc += function_documentation
         if class_name in self.metadata:
-            for category in self.metadata[class_name]:
-                # Ignore anything in the Ignore category.
-                if category == "Ignore":
-                    continue
-                if category != "Constructor":
-                    doc += f"### {category}\n\n"
-                    if self.metadata[class_name][category]["description"] != "":
-                        category_desc = self.metadata[class_name][category]["description"]
-                        category_desc = re.sub(r"^(.(.*))", r"\1", category_desc, flags=re.MULTILINE)
-                        doc += f'{category_desc}\n\n'
-                for function in functions_by_categories[category]:
-                    doc += function
-                doc += "***\n\n"
+            doc = self.sort_by_metadata(class_name=class_name, doc=doc)
         # Add a table of contents.
         doc = doc.replace("[TOC]", PyMdDoc.get_doc_toc(doc))
         # Add an import prefix.

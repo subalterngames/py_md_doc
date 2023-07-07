@@ -17,6 +17,8 @@ VAR: int = 0
 
 ***
 
+## Functions
+
 #### get
 
 **`VarDoc.get(src, dst)`**
