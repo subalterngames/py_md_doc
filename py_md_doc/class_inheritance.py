@@ -222,7 +222,7 @@ class ClassInheritance(DocBase):
                 child_text = child_text.replace("## Functions", section_break_functions)
         child_text = child_text.replace(f"{child_class_name}(ABC)", child_class_name)
         if child_class_name in self.metadata:
-            doc = self.sort_by_metadata(class_name=child_class_name, doc=child_text)
+            return self.sort_by_metadata(class_name=child_class_name, doc=child_text)
         return child_text
 
     @staticmethod

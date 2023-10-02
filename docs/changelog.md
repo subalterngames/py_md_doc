@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.5.1
+
+- Fixed: Can't upload to PyPi due to bad version classifiers.
+
 ### 0.5.0
 
 - Added `BaseDoc` abstract class. `ClassInteritance` and `PyMdDoc` are now subclasses of `BaseDoc`.
